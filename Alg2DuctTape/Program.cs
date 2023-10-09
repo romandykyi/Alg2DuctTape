@@ -11,6 +11,11 @@
         // Adres email:
         private const string Email = "in53xxx@zut.edu.pl";
 
+        private static readonly HashSet<string> CFilesExtensions = new()
+        {
+            ".c", ".cpp"
+        };
+
         private static bool TryParseInclude(string line, out string? result)
         {
             result = null;
@@ -33,7 +38,7 @@
             filePath = filePath.Trim();
             if (includedFiles.Contains(filePath)) return;
 
-            Console.WriteLine($"Parsing {filePath}. . .");
+            Console.WriteLine($"Parsing \"{filePath}\". . .");
 
             includedFiles.Add(filePath);
 
@@ -68,13 +73,19 @@
             }
         }
 
-        private static void DuctTape(string mainFilePath, string outputFile, string header)
+        private static void DuctTape(string projectFolderPath, string outputFile, string header)
         {
             string tempFileName = $"{Path.GetTempPath()}{Guid.NewGuid()}.cpp";
             HashSet<string> includes = new();
+            var cFiles = Directory
+                .GetFiles(projectFolderPath, "*.*", SearchOption.AllDirectories)
+                .Where(f => CFilesExtensions.Contains(Path.GetExtension(f).ToLower()));
             using (StreamWriter writer = new(tempFileName))
             {
-                ParseFile(mainFilePath, writer, new(), includes);
+                foreach (var file in cFiles)
+                {
+                    ParseFile(file, writer, new(), includes);
+                }
             }
 
             Console.WriteLine("Duct taping. . .");
@@ -104,17 +115,17 @@
         {
             while (true)
             {
-                Console.Write("Main .cpp/.c file path: ");
-                string? mainFilePath = (Console.ReadLine() ?? string.Empty).Trim('"');
+                Console.Write("Project directory path: ");
+                string? projectDirectoryPath = (Console.ReadLine() ?? string.Empty).Trim('"');
                 Console.Write("Lab name: ");
                 string? labName = Console.ReadLine() ?? string.Empty;
 
                 string emailSubject = $"ALGO2 IS1 {GroupName.ToUpper()} {labName.ToUpper()}";
                 string outputFileName = $"{StudentId}.algo2.{labName.ToLower()}.main.cpp";
-                string outputPath = Path.Combine(Path.GetDirectoryName(mainFilePath)!, outputFileName);
+                string outputPath = Path.Combine(projectDirectoryPath, outputFileName);
                 try
                 {
-                    DuctTape(mainFilePath, outputPath.ToLower(), emailSubject);
+                    DuctTape(projectDirectoryPath, outputPath.ToLower(), emailSubject);
 
                     Console.WriteLine($"Saved file: {outputPath}");
                     Console.WriteLine($"Email subject: {emailSubject}");

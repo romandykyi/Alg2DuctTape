@@ -16,7 +16,7 @@ const string AuthorFullName = "Imię Nazwisko";
 const string Email = "in53xxx@zut.edu.pl";
 ```
 3. Далі запускаємо програму:
-   * В 'Main .cpp/.c file path: ' вводимо шлях до головного .cpp/.c файлу
+   * В 'Project directory path: ' вводимо шлях до папки, яка містить головний .cpp/.c файл
    * В 'Lab name: ' вводимо назву лабораторної роботи(напр. ```Lab01```)
 
 Після цих кроків шлях до створеного файлу та тема email'у будуть виведені на екран.
