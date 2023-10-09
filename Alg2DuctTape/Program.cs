@@ -3,13 +3,13 @@
     public static class Program
     {
         // Numer albumu:
-        const string StudentId = "53xxx";
+        private const string StudentId = "53xxx";
         // Numer grupy laboratoryjnej:
-        const string GroupName = "200X";
+        private const string GroupName = "200X";
         // Imię i nazwisko autora:
-        const string AuthorFullName = "Imię Nazwisko";
+        private const string AuthorFullName = "Imię Nazwisko";
         // Adres email:
-        const string Email = "in53xxx@zut.edu.pl";
+        private const string Email = "in53xxx@zut.edu.pl";
 
         private static bool TryParseInclude(string line, out string? result)
         {
