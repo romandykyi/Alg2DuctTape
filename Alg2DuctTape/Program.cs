@@ -1,4 +1,6 @@
-﻿namespace Alg2DuctTape
+﻿using System.Text.RegularExpressions;
+
+namespace Alg2DuctTape
 {
     public static class Program
     {
@@ -15,6 +17,8 @@
         {
             ".c", ".cpp"
         };
+
+        private static readonly Regex GeneratedFileRegex = new(@"^.*\.algo2\..*\.main$");
 
         private static bool TryParseInclude(string line, out string? result)
         {
@@ -35,7 +39,15 @@
         private static void ParseFile(string filePath, TextWriter writer,
             HashSet<string> includedFiles, HashSet<string> includes)
         {
+            // Ignore generated file
+            string nameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+            if (GeneratedFileRegex.IsMatch(nameWithoutExtension))
+            {
+                return;
+            }
+
             filePath = filePath.Trim();
+
             if (includedFiles.Contains(filePath)) return;
 
             Console.WriteLine($"Parsing \"{filePath}\". . .");
@@ -56,16 +68,19 @@
 
                 if (TryParseInclude(currentLine, out var relativePath))
                 {
+                    // #include "file"
                     if (relativePath != null)
                     {
                         string includeFile = Path.GetFullPath(relativePath, baseFolder);
                         ParseFile(includeFile, writer, includedFiles, includes);
                     }
+                    // #include <file>
                     else
                     {
                         includes.Add(currentLine.Trim());
                     }
                 }
+                // Default line
                 else
                 {
                     writer.WriteLine(currentLine);
